@@ -1,5 +1,7 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
-import bodyParser from 'body-parser';
 import { Telegraf } from 'telegraf';
 
 type BotConfig = {
@@ -11,7 +13,7 @@ const botConfigs = new Map<string, BotConfig>([
   [
     'testbot1',
     {
-      token: '123456789:AAbot_token_1',
+      token: process.env.BOT_TOKEN ?? '123456789:AAbot_token_1',
       greeting: '👋 Hello from Test Bot 1!',
     },
   ],
@@ -25,11 +27,13 @@ const botConfigs = new Map<string, BotConfig>([
 ]);
 
 const app = express();
-app.use(bodyParser.json());
+app.use(express.json());
 
 app.post('/bot/:botId/webhook', async (req, res) => {
   const { botId } = req.params;
   const config = botConfigs.get(botId);
+
+  console.log('Config for botId:', botId, 'is', config);
 
   if (!config) {
     res.status(404).send('Bot not found');
