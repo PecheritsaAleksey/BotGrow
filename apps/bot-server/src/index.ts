@@ -3,35 +3,22 @@ dotenv.config();
 
 import express from 'express';
 import { Telegraf } from 'telegraf';
+import { addBot, getBotConfig } from '@botgrow/db';
 
-type BotConfig = {
-  token: string;
-  greeting: string;
-};
-
-const botConfigs = new Map<string, BotConfig>([
-  [
-    'testbot1',
-    {
-      token: process.env.BOT_TOKEN ?? '123456789:AAbot_token_1',
-      greeting: '👋 Hello from Test Bot 1!',
-    },
-  ],
-  [
-    'testbot2',
-    {
-      token: '987654321:BBbot_token_2',
-      greeting: '👋 Welcome from Test Bot 2!',
-    },
-  ],
-]);
+addBot('testbot1', {
+  token: '123456789:ABCDEF123456_test_token',
+  greeting: {
+    type: 'text',
+    payload: '👋 Hello from DB!',
+  },
+});
 
 const app = express();
 app.use(express.json());
 
 app.post('/bot/:botId/webhook', async (req, res) => {
   const { botId } = req.params;
-  const config = botConfigs.get(botId);
+  const config = getBotConfig(botId);
 
   console.log('Config for botId:', botId, 'is', config);
 
@@ -41,7 +28,11 @@ app.post('/bot/:botId/webhook', async (req, res) => {
   }
 
   const bot = new Telegraf(config.token);
-  bot.start((ctx) => ctx.reply(config.greeting));
+  bot.start((ctx) => {
+    if (config.greeting.type === 'text') {
+      ctx.reply(config.greeting.payload);
+    }
+  });
 
   await bot.handleUpdate(req.body);
   res.send('OK');
