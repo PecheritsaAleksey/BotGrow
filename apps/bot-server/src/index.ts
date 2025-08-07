@@ -6,7 +6,7 @@ import { Telegraf } from 'telegraf';
 import { addBot, getBotConfig } from '@botgrow/db';
 
 addBot('testbot1', {
-  token: '123456789:ABCDEF123456_test_token',
+  token: process.env.BOT_TOKEN as string,
   greeting: {
     type: 'text',
     payload: '👋 Hello from DB!',
