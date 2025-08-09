@@ -4,10 +4,10 @@ services:
     image: postgres:15
     ports:
       - "5432:5432"
-    environment:
-      POSTGRES_DB: botgrow
-      POSTGRES_USER: botgrow
-      POSTGRES_PASSWORD: secret
+    env_file:
+      - .env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
   core-api:
     build: apps/core-api
     ports:
@@ -24,3 +24,6 @@ services:
       - .env
     depends_on:
       - db
+
+volumes:
+  pgdata:
