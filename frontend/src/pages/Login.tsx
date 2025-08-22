@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '@/store/auth';
-import { authTelegram } from '@/shared/api';
+import { authTelegram, devLogin } from '@/shared/api';
 
 type TelegramAuthUser = {
   id: number;
@@ -23,6 +23,8 @@ export default function Login() {
   const nav = useNavigate();
   const login = useAuth((s) => s.login);
   const widgetRef = useRef<HTMLDivElement>(null);
+  const showDev =
+    import.meta.env.DEV && import.meta.env.VITE_ENABLE_DEV_LOGIN === 'true';
 
   // global callback: called by Telegram widget
   (window as TGWindow).onTelegramAuth = async (user: TelegramAuthUser) => {
@@ -59,6 +61,24 @@ export default function Login() {
       <div className="p-8 rounded-2xl shadow bg-white space-y-4 text-center">
         <h1 className="text-2xl font-semibold">Sign in to BotGrow</h1>
         <div ref={widgetRef} className="flex justify-center" />
+        {showDev && (
+          <button
+            type="button"
+            className="w-full bg-gray-200 text-gray-700 py-2 rounded"
+            onClick={async () => {
+              try {
+                const res = await devLogin();
+                useAuth.getState().login(res.token, res.user);
+                nav('/', { replace: true });
+              } catch (e) {
+                console.error('Dev login failed', e);
+                alert('Dev login failed');
+              }
+            }}
+          >
+            Login as Demo User
+          </button>
+        )}
         <p className="text-sm text-gray-500">
           Login with your Telegram account to continue.
         </p>

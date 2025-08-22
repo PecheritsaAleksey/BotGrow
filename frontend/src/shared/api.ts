@@ -1,6 +1,8 @@
 import axios from 'axios';
-import { useAuth } from '@/store/auth';
+
 import type { Bot } from './types';
+
+import { useAuth } from '@/store/auth';
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_CORE_API_URL,
@@ -13,9 +15,14 @@ api.interceptors.request.use((config) => {
 });
 
 // POST /auth/telegram
-export async function authTelegram(payload: any) {
+export async function authTelegram(payload: unknown) {
   const { data } = await api.post('/auth/telegram', payload);
-  return data as { token: string; user: any };
+  return data as { token: string; user: unknown };
+}
+
+export async function devLogin() {
+  const { data } = await api.post('/auth/dev-login');
+  return data as { token: string; user: unknown };
 }
 
 export async function getBots(): Promise<Bot[]> {
