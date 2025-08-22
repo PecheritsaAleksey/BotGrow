@@ -5,6 +5,9 @@ COMPOSE_FILE=docker-compose-dev.yml
 up:
 	docker compose -f $(COMPOSE_FILE) up -d
 
+uplogs:
+	docker compose -f $(COMPOSE_FILE) up
+
 down:
 	docker compose -f $(COMPOSE_FILE) down
 

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/store/auth';
 import { authTelegram, devLogin } from '@/shared/api';
 
-type TelegramAuthUser = {
+export type TelegramAuthUser = {
   id: number;
   first_name: string;
   last_name?: string;
@@ -68,7 +68,7 @@ export default function Login() {
             onClick={async () => {
               try {
                 const res = await devLogin();
-                useAuth.getState().login(res.token, res.user);
+                login(res.token, res.user);
                 nav('/', { replace: true });
               } catch (e) {
                 console.error('Dev login failed', e);

@@ -2,7 +2,9 @@ import axios from 'axios';
 
 import type { Bot } from './types';
 
+import type { TGUser } from '@/store/auth';
 import { useAuth } from '@/store/auth';
+import type { TelegramAuthUser } from '@/pages/Login';
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_CORE_API_URL,
@@ -15,14 +17,14 @@ api.interceptors.request.use((config) => {
 });
 
 // POST /auth/telegram
-export async function authTelegram(payload: unknown) {
+export async function authTelegram(payload: TelegramAuthUser) {
   const { data } = await api.post('/auth/telegram', payload);
-  return data as { token: string; user: unknown };
+  return data as { token: string; user: TGUser };
 }
 
 export async function devLogin() {
   const { data } = await api.post('/auth/dev-login');
-  return data as { token: string; user: unknown };
+  return data as { token: string; user: TGUser };
 }
 
 export async function getBots(): Promise<Bot[]> {
