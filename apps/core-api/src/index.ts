@@ -1,13 +1,16 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { userService } from '@botgrow/db';
+
+import authRouter from './routes/auth';
 
 dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+app.use('/auth', authRouter);
 
 interface ContactBody {
   userId: string;
@@ -19,23 +22,6 @@ app.post('/contacts', (req: Request, res: Response) => {
   const { userId, username, lang } = req.body as ContactBody;
   console.log({ userId, username, lang });
   res.sendStatus(200);
-});
-
-app.post('/auth/telegram', async (req: Request, res: Response) => {
-  const telegramUser = req.body;
-  try {
-    const user = await userService.createOrUpdateByTelegram({
-      telegramId: telegramUser.id,
-      username: telegramUser.username,
-      firstName: telegramUser.first_name,
-      lastName: telegramUser.last_name,
-      photoUrl: telegramUser.photo_url,
-    });
-    res.json(user);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Failed to persist user' });
-  }
 });
 
 const PORT = 4000;
