@@ -7,6 +7,7 @@ export const config = {
   jwtSecret: process.env.JWT_SECRET!,
   jwtExpires: process.env.JWT_EXPIRES || '7d',
   telegramBotToken: process.env.AUTH_TELEGRAM_BOT_TOKEN,
+  encryptionKey: process.env.ENCRYPTION_KEY!,
   devMode:
     process.env.DEV_MODE === 'true' || process.env.NODE_ENV !== 'production',
   devUser: {

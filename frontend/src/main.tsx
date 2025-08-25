@@ -1,9 +1,16 @@
 import { StrictMode, type ReactElement } from 'react';
 import { createRoot } from 'react-dom/client';
-import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Navigate,
+} from 'react-router-dom';
+
 import App from './App';
+
 import Dashboard from '@/pages/Dashboard';
 import Bots from '@/pages/Bots';
+import BotEdit from '@/pages/BotEdit';
 import Settings from '@/pages/Settings';
 import Login from '@/pages/Login';
 import { useAuth } from '@/store/auth';
@@ -25,6 +32,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Dashboard /> },
       { path: 'bots', element: <Bots /> },
+      { path: 'bots/:id', element: <BotEdit /> },
       { path: 'settings', element: <Settings /> },
     ],
   },
