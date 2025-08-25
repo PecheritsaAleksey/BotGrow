@@ -1,6 +1,11 @@
 import axios from 'axios';
 
-import type { Bot } from './types';
+import type {
+  Bot,
+  BotWithToken,
+  CreateBotInput,
+  UpdateBotInput,
+} from './types';
 
 import type { TGUser } from '@/store/auth';
 import { useAuth } from '@/store/auth';
@@ -27,7 +32,31 @@ export async function devLogin() {
   return data as { token: string; user: TGUser };
 }
 
-export async function getBots(): Promise<Bot[]> {
+export async function listBots(): Promise<Bot[]> {
   const { data } = await api.get('/bots');
-  return data as Bot[];
+  return data.data.bots as Bot[];
+}
+
+export async function getBot(id: number): Promise<Bot> {
+  const { data } = await api.get(`/bots/${id}`);
+  return data.data.bot as Bot;
+}
+
+export async function createBot(
+  payload: CreateBotInput,
+): Promise<BotWithToken> {
+  const { data } = await api.post('/bots', payload);
+  return data.data as BotWithToken;
+}
+
+export async function updateBot(
+  id: number,
+  payload: UpdateBotInput,
+): Promise<BotWithToken> {
+  const { data } = await api.put(`/bots/${id}`, payload);
+  return data.data as BotWithToken;
+}
+
+export async function deleteBot(id: number): Promise<void> {
+  await api.delete(`/bots/${id}`);
 }
