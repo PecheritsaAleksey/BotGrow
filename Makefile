@@ -1,21 +1,26 @@
 COMPOSE_FILE=docker-compose-dev.yml
 
-.PHONY: up down logs restart ps db-sh core-sh bot-sh
+.PHONY: up down logs restart ps db-sh core-sh bot-sh migrate-new migrate-deploy
 
 deps:
-	$(DC) run --rm deps sh -lc 'corepack enable && corepack prepare pnpm@10.15.0 --activate && pnpm -r install --no-frozen-lockfile'
+	docker compose $(COMPOSE_FILE) run --rm deps sh -lc 'corepack enable && corepack prepare pnpm@10.15.0 --activate && pnpm -r install --no-frozen-lockfile'
 
 migrate-deploy:
-	$(DC) run --rm migrate
+	docker compose -f $(COMPOSE_FILE) run --rm deps sh -lc '\
+	  set -e; \
+	  corepack enable && corepack prepare pnpm@10.15.0 --activate; \
+	  cd packages/db; \
+	  pnpm prisma migrate deploy \
+	'
 
 migrate-status:
-	$(DC) run --rm deps sh -lc '\
+	docker compose -f $(COMPOSE_FILE) run --rm deps sh -lc '\
 	  corepack enable && corepack prepare pnpm@10.15.0 --activate; \
 	  cd packages/db; \
 	  pnpm prisma migrate status \
 
 migrate-new:
-	$(DC) run --rm deps sh -lc '\
+	docker compose -f $(COMPOSE_FILE) run --rm deps sh -lc '\
 	  set -e; \
 	  corepack enable && corepack prepare pnpm@10.15.0 --activate; \
 	  cd packages/db; \

@@ -16,6 +16,8 @@ model User {
   photoUrl    String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  bots        Bot[]    @relation("UserBots")
 }
 
 model Bot {
@@ -30,7 +32,7 @@ model Bot {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(name: "UserBots", fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([tokenHash])
