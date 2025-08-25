@@ -1,5 +1,5 @@
 {
-  "name": "bot-server",
+  "name": "@botgrow/bot-server",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -11,7 +11,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.5.2",
   "dependencies": {
     "@botgrow/db": "workspace:*",
     "dotenv": "^17.2.1",
@@ -21,6 +20,8 @@
   "devDependencies": {
     "@types/express": "^5.0.3",
     "@types/node": "^24.2.0",
+    "tsx": "^4.20.3",
     "typescript": "^5.9.2"
-  }
+  },
+  "packageManager": "pnpm@10.15.0"
 }

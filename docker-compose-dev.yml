@@ -1,76 +1,146 @@
-version: '3.8'
-
 services:
   db:
     image: postgres:15
     container_name: botgrow-db
     ports:
-      - '5432:5432'
+      - "5432:5432"
     env_file: .env
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB']
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 5s
       timeout: 3s
-      retries: 10
+      retries: 20
+
+  deps:
+    image: node:20-alpine
+    container_name: botgrow-deps
+    working_dir: /repo
+    environment:
+      PNPM_HOME: /pnpm
+      PNPM_STORE_DIR: /pnpm
+      PATH: /pnpm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    volumes:
+      - .:/repo:cached
+      - node_modules_root:/repo/node_modules
+      - pnpm_store:/pnpm
+    command:
+      - /bin/sh
+      - -lc
+      - |
+        set -e
+        corepack enable
+        corepack prepare pnpm@10.15.0 --activate
+        pnpm --version
+        pnpm -r install --force --no-frozen-lockfile
+    restart: "no"
 
   core-api:
     image: node:20-alpine
     container_name: botgrow-core-api
-    working_dir: /app
+    working_dir: /repo/apps/core-api
     ports:
-      - '4000:4000'
+      - "4000:4000"
     env_file: .env
     environment:
-      CHOKIDAR_USEPOLLING: 'true'
-      WATCHPACK_POLLING: 'true'
       DATABASE_URL: ${DATABASE_URL}
+      CHOKIDAR_USEPOLLING: "true"
+      WATCHPACK_POLLING: "true"
+      PNPM_HOME: /pnpm
+      PNPM_STORE_DIR: /pnpm
+      PATH: /pnpm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
     volumes:
-      - ./apps/core-api:/app
-      - pnpm-store:/root/.local/share/pnpm
-    command: sh -c "npm i -g pnpm && pnpm i && pnpm dev"
+      - .:/repo:cached
+      - node_modules_root:/repo/node_modules
+      - pnpm_store:/pnpm
+    command:
+      - /bin/sh
+      - -lc
+      - |
+        set -e
+        corepack enable
+        corepack prepare pnpm@10.15.0 --activate
+        pnpm --version
+        pnpm dev
     depends_on:
+      deps:
+        condition: service_completed_successfully
       db:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:4000/health || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 10s
 
-  bot-server:
+  botserver:
     image: node:20-alpine
     container_name: botgrow-bot-server
-    working_dir: /app
+    working_dir: /repo/apps/bot-server
     ports:
-      - '3000:3000'
+      - "3000:3000"
     env_file: .env
     environment:
-      CHOKIDAR_USEPOLLING: 'true'
-      WATCHPACK_POLLING: 'true'
       DATABASE_URL: ${DATABASE_URL}
+      CHOKIDAR_USEPOLLING: "true"
+      WATCHPACK_POLLING: "true"
+      PNPM_HOME: /pnpm
+      PNPM_STORE_DIR: /pnpm
+      PATH: /pnpm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
     volumes:
-      - ./apps/bot-server:/app
-      - pnpm-store:/root/.local/share/pnpm
-    command: sh -c "npm i -g pnpm && pnpm i && pnpm dev"
+      - .:/repo:cached
+      - node_modules_root:/repo/node_modules
+      - pnpm_store:/pnpm
+    command:
+      - /bin/sh
+      - -lc
+      - |
+        set -e
+        corepack enable
+        corepack prepare pnpm@10.15.0 --activate
+        pnpm --version
+        pnpm dev
     depends_on:
+      deps:
+        condition: service_completed_successfully
       db:
         condition: service_healthy
 
   frontend:
     image: node:20-alpine
     container_name: botgrow-frontend
-    working_dir: /app
+    working_dir: /repo/frontend
     ports:
-      - '5173:5173'
+      - "5173:5173"
     env_file: .env
     environment:
-      CHOKIDAR_USEPOLLING: 'true'
-      WATCHPACK_POLLING: 'true'
+      CHOKIDAR_USEPOLLING: "true"
+      WATCHPACK_POLLING: "true"
+      PNPM_HOME: /pnpm
+      PNPM_STORE_DIR: /pnpm
+      PATH: /pnpm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
     volumes:
-      - ./frontend:/app
-      - ./tsconfig.base.json:/tsconfig.base.json:ro
-      - pnpm-store:/root/.local/share/pnpm
-    command: sh -c "npm i -g pnpm && pnpm i && pnpm dev --host 0.0.0.0 --port 5173"
+      - .:/repo:cached
+      - node_modules_root:/repo/node_modules
+      - pnpm_store:/pnpm
+    command:
+      - /bin/sh
+      - -lc
+      - |
+        set -e
+        corepack enable
+        corepack prepare pnpm@10.15.0 --activate
+        pnpm --version
+        pnpm exec vite --host 0.0.0.0 --port 5173
     depends_on:
-      - core-api
+      deps:
+        condition: service_completed_successfully
+      core-api:
+        condition: service_healthy
 
 volumes:
   pgdata:
-  pnpm-store:
+  pnpm_store:
+  node_modules_root:
