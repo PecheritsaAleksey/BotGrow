@@ -34,19 +34,19 @@ export async function devLogin() {
 
 export async function listBots(): Promise<Bot[]> {
   const { data } = await api.get('/bots');
-  return data.data.bots as Bot[];
+  return data.bots as Bot[];
 }
 
 export async function getBot(id: number): Promise<Bot> {
   const { data } = await api.get(`/bots/${id}`);
-  return data.data.bot as Bot;
+  return data.bot as Bot;
 }
 
 export async function createBot(
   payload: CreateBotInput,
 ): Promise<BotWithToken> {
   const { data } = await api.post('/bots', payload);
-  return data.data as BotWithToken;
+  return data as BotWithToken;
 }
 
 export async function updateBot(
@@ -54,7 +54,7 @@ export async function updateBot(
   payload: UpdateBotInput,
 ): Promise<BotWithToken> {
   const { data } = await api.put(`/bots/${id}`, payload);
-  return data.data as BotWithToken;
+  return data as BotWithToken;
 }
 
 export async function deleteBot(id: number): Promise<void> {

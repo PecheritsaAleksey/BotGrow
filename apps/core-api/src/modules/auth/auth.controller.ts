@@ -11,7 +11,7 @@ export async function telegramLogin(
   try {
     const body = req.body as TelegramAuthUser;
     const data = await authService.loginWithTelegram(body);
-    res.json({ ok: true, data });
+    res.status(200).json(data);
   } catch (err) {
     next(err);
   }
@@ -24,7 +24,7 @@ export async function devLogin(
 ): Promise<void> {
   try {
     const data = await authService.devLogin();
-    res.json({ ok: true, data });
+    res.status(200).json(data);
   } catch (err) {
     next(err);
   }
