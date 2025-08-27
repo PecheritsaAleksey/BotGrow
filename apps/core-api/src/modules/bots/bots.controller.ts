@@ -9,7 +9,7 @@ export async function listBots(
 ) {
   try {
     const bots = await botsService.listBots(req.user!.id);
-    res.json({ ok: true, data: { bots } });
+    res.status(200).json({ bots });
   } catch (err) {
     next(err);
   }
@@ -22,7 +22,7 @@ export async function createBot(
 ) {
   try {
     const result = await botsService.createBot(req.user!.id, req.body);
-    res.json({ ok: true, data: result });
+    res.status(201).json(result);
   } catch (err) {
     next(err);
   }
@@ -32,7 +32,7 @@ export async function getBot(req: Request, res: Response, next: NextFunction) {
   try {
     const id = Number(req.params.id);
     const result = await botsService.getBot(req.user!.id, id);
-    res.json({ ok: true, data: result });
+    res.status(200).json(result);
   } catch (err) {
     next(err);
   }
@@ -46,7 +46,7 @@ export async function updateBot(
   try {
     const id = Number(req.params.id);
     const result = await botsService.updateBot(req.user!.id, id, req.body);
-    res.json({ ok: true, data: result });
+    res.status(200).json(result);
   } catch (err) {
     next(err);
   }
@@ -60,7 +60,7 @@ export async function deleteBot(
   try {
     const id = Number(req.params.id);
     await botsService.deleteBot(req.user!.id, id);
-    res.json({ ok: true, data: {} });
+    res.status(204).send();
   } catch (err) {
     next(err);
   }
