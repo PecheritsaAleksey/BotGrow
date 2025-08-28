@@ -18,6 +18,7 @@ migrate-status:
 	  corepack enable && corepack prepare pnpm@10.15.0 --activate; \
 	  cd packages/db; \
 	  pnpm prisma migrate status \
+	'
 
 migrate-new:
 	docker compose -f $(COMPOSE_FILE) run --rm deps sh -lc '\

@@ -21,7 +21,7 @@ model User {
 }
 
 model Bot {
-  id             Int      @id @default(autoincrement())
+  id             String   @id @default(uuid())
   userId         String
   name           String
   description    String?  @db.Text
