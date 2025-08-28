@@ -30,7 +30,7 @@ export async function createBot(
 
 export async function getBot(req: Request, res: Response, next: NextFunction) {
   try {
-    const id = Number(req.params.id);
+    const id = req.params.id;
     const result = await botsService.getBot(req.user!.id, id);
     res.status(200).json(result);
   } catch (err) {
@@ -44,7 +44,7 @@ export async function updateBot(
   next: NextFunction,
 ) {
   try {
-    const id = Number(req.params.id);
+    const id = req.params.id;
     const result = await botsService.updateBot(req.user!.id, id, req.body);
     res.status(200).json(result);
   } catch (err) {
@@ -58,7 +58,7 @@ export async function deleteBot(
   next: NextFunction,
 ) {
   try {
-    const id = Number(req.params.id);
+    const id = req.params.id;
     await botsService.deleteBot(req.user!.id, id);
     res.status(204).send();
   } catch (err) {

@@ -21,7 +21,7 @@ export default function BotEdit() {
 
   useEffect(() => {
     if (!isNew && id) {
-      getBot(Number(id)).then((b) => {
+      getBot(id).then((b) => {
         setBot(b);
         setForm({
           name: b.name,
@@ -53,7 +53,7 @@ export default function BotEdit() {
         setBot(res.bot);
         navigate(`/bots/${res.bot.id}`, { replace: true });
       } else if (id) {
-        const res = await updateBot(Number(id), {
+        const res = await updateBot(id, {
           name: form.name,
           description: form.description || undefined,
           photoUrl: form.photoUrl || undefined,
@@ -72,7 +72,7 @@ export default function BotEdit() {
   const handleDelete = async () => {
     if (!id || isNew) return;
     if (!confirm('Delete this bot?')) return;
-    await deleteBot(Number(id));
+    await deleteBot(id);
     navigate('/bots');
   };
 

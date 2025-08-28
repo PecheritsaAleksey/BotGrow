@@ -19,5 +19,5 @@ export const updateBotSchema = z
   });
 
 export const idParamSchema = z.object({
-  id: z.coerce.number().int().positive(),
+  id: z.string().uuid(),
 });

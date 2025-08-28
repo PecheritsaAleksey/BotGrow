@@ -16,15 +16,18 @@ export const botService = {
   },
 
   findAllByUser(userId: string): Promise<Bot[]> {
-    return prisma.bot.findMany({ where: { userId }, orderBy: { id: 'asc' } });
+    return prisma.bot.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'asc' },
+    });
   },
 
-  findByIdForUser(id: number, userId: string): Promise<Bot | null> {
+  findByIdForUser(id: string, userId: string): Promise<Bot | null> {
     return prisma.bot.findFirst({ where: { id, userId } });
   },
 
   async updateForUser(
-    id: number,
+    id: string,
     userId: string,
     data: Partial<
       Pick<
@@ -43,7 +46,7 @@ export const botService = {
     return prisma.bot.findUnique({ where: { id } });
   },
 
-  async deleteForUser(id: number, userId: string): Promise<boolean> {
+  async deleteForUser(id: string, userId: string): Promise<boolean> {
     const res = await prisma.bot.deleteMany({ where: { id, userId } });
     return res.count > 0;
   },

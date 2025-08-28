@@ -35,7 +35,7 @@ export class BotsService {
     return toBotDTO(bot, data.botToken);
   }
 
-  async getBot(userId: string, id: number) {
+  async getBot(userId: string, id: string) {
     const bot = await botService.findByIdForUser(id, userId);
     if (!bot) throw new ApiError(404, 'not_found', 'Bot not found');
     return toBotDTO(bot);
@@ -43,7 +43,7 @@ export class BotsService {
 
   async updateBot(
     userId: string,
-    id: number,
+    id: string,
     patch: {
       name?: string;
       description?: string | null;
@@ -69,7 +69,7 @@ export class BotsService {
     return toBotDTO(updated, plain);
   }
 
-  async deleteBot(userId: string, id: number) {
+  async deleteBot(userId: string, id: string) {
     const ok = await botService.deleteForUser(id, userId);
     if (!ok) throw new ApiError(404, 'not_found', 'Bot not found');
   }

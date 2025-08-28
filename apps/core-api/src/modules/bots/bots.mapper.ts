@@ -3,7 +3,7 @@ import { Bot } from '@prisma/client';
 import { maskToken, maskTokenFromLast4 } from '../../lib/crypto';
 
 export type BotDTO = {
-  id: number;
+  id: string;
   name: string;
   description?: string | null;
   photoUrl?: string | null;

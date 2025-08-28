@@ -37,7 +37,7 @@ export async function listBots(): Promise<Bot[]> {
   return data.bots as Bot[];
 }
 
-export async function getBot(id: number): Promise<Bot> {
+export async function getBot(id: string): Promise<Bot> {
   const { data } = await api.get(`/bots/${id}`);
   return data.bot as Bot;
 }
@@ -50,13 +50,13 @@ export async function createBot(
 }
 
 export async function updateBot(
-  id: number,
+  id: string,
   payload: UpdateBotInput,
 ): Promise<BotWithToken> {
   const { data } = await api.put(`/bots/${id}`, payload);
   return data as BotWithToken;
 }
 
-export async function deleteBot(id: number): Promise<void> {
+export async function deleteBot(id: string): Promise<void> {
   await api.delete(`/bots/${id}`);
 }
