@@ -15,7 +15,7 @@ export default function Bots() {
     load();
   }, []);
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     if (!confirm('Delete this bot?')) return;
     await deleteBot(id);
     load();
@@ -35,6 +35,7 @@ export default function Bots() {
         <thead>
           <tr>
             <th className="py-2">Name</th>
+            <th className="py-2">Status</th>
             <th className="py-2">Token</th>
             <th />
           </tr>
@@ -43,6 +44,19 @@ export default function Bots() {
           {bots.map((b) => (
             <tr key={b.id} className="border-t">
               <td className="py-2">{b.name}</td>
+              <td className="py-2">
+                <span
+                  className={
+                    b.status === 'connected'
+                      ? 'text-green-600'
+                      : b.status === 'error'
+                        ? 'text-red-600'
+                        : 'text-gray-500'
+                  }
+                >
+                  ●
+                </span>
+              </td>
               <td className="py-2 font-mono">{b.tokenMasked}</td>
               <td className="py-2 space-x-2">
                 <button

@@ -5,6 +5,8 @@ import type {
   BotWithToken,
   CreateBotInput,
   UpdateBotInput,
+  ConnectResult,
+  DisconnectResult,
 } from './types';
 
 import type { TGUser } from '@/store/auth';
@@ -59,4 +61,14 @@ export async function updateBot(
 
 export async function deleteBot(id: string): Promise<void> {
   await api.delete(`/bots/${id}`);
+}
+
+export async function connectBot(id: string): Promise<ConnectResult> {
+  const { data } = await api.post(`/bots/${id}/connect`);
+  return data as ConnectResult;
+}
+
+export async function disconnectBot(id: string): Promise<DisconnectResult> {
+  const { data } = await api.post(`/bots/${id}/disconnect`);
+  return data as DisconnectResult;
 }

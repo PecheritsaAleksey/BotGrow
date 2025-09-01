@@ -2,7 +2,14 @@ import { useEffect, useState, ChangeEvent, FormEvent } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import Card from '@/components/Card';
-import { getBot, createBot, updateBot, deleteBot } from '@/shared/api';
+import {
+  getBot,
+  createBot,
+  updateBot,
+  deleteBot,
+  connectBot,
+  disconnectBot,
+} from '@/shared/api';
 import type { Bot } from '@/shared/types';
 
 export default function BotEdit() {
@@ -12,6 +19,7 @@ export default function BotEdit() {
 
   const [bot, setBot] = useState<Bot | null>(null);
   const [plainToken, setPlainToken] = useState<string | null>(null);
+  const [isBusy, setIsBusy] = useState(false);
   const [form, setForm] = useState({
     name: '',
     description: '',
@@ -76,6 +84,38 @@ export default function BotEdit() {
     navigate('/bots');
   };
 
+  async function handleConnect() {
+    if (!bot?.id) return;
+    try {
+      setIsBusy(true);
+      await connectBot(bot.id);
+      const fresh = await getBot(bot.id);
+      setBot(fresh);
+      alert('Webhook connected');
+    } catch (e) {
+      console.error(e);
+      alert('Failed to connect');
+    } finally {
+      setIsBusy(false);
+    }
+  }
+
+  async function handleDisconnect() {
+    if (!bot?.id) return;
+    try {
+      setIsBusy(true);
+      await disconnectBot(bot.id);
+      const fresh = await getBot(bot.id);
+      setBot(fresh);
+      alert('Webhook disconnected');
+    } catch (e) {
+      console.error(e);
+      alert('Failed to disconnect');
+    } finally {
+      setIsBusy(false);
+    }
+  }
+
   return (
     <Card title={isNew ? 'Create Bot' : 'Edit Bot'}>
       <form className="space-y-4" onSubmit={handleSubmit}>
@@ -138,6 +178,7 @@ export default function BotEdit() {
           <button
             type="submit"
             className="bg-green-500 text-white px-4 py-1 rounded"
+            disabled={isBusy}
           >
             Save
           </button>
@@ -146,12 +187,83 @@ export default function BotEdit() {
               type="button"
               onClick={handleDelete}
               className="bg-red-500 text-white px-4 py-1 rounded"
+              disabled={isBusy}
             >
               Delete
             </button>
           )}
         </div>
       </form>
+
+      {!isNew && bot && (
+        <div className="mt-6 border rounded p-3 space-y-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="font-semibold">Connection</span>
+              <span
+                className={
+                  bot.status === 'connected'
+                    ? 'text-green-600'
+                    : bot.status === 'error'
+                      ? 'text-red-600'
+                      : 'text-gray-600'
+                }
+              >
+                {bot.status}
+              </span>
+            </div>
+
+            <div className="flex gap-2">
+              {bot.status !== 'connected' && (
+                <button
+                  type="button"
+                  className="bg-blue-600 text-white px-3 py-1 rounded"
+                  onClick={handleConnect}
+                  disabled={isBusy}
+                >
+                  {isBusy ? 'Connecting…' : 'Connect'}
+                </button>
+              )}
+              {bot.status === 'connected' && (
+                <button
+                  type="button"
+                  className="bg-yellow-600 text-white px-3 py-1 rounded"
+                  onClick={handleDisconnect}
+                  disabled={isBusy}
+                >
+                  {isBusy ? 'Disconnecting…' : 'Disconnect'}
+                </button>
+              )}
+            </div>
+          </div>
+
+          {bot.status === 'connected' && bot.webhookUrl && (
+            <div className="text-sm">
+              <div className="text-gray-500 mb-1">Webhook URL</div>
+              <div className="flex items-center gap-2">
+                <input
+                  className="border p-2 w-full"
+                  readOnly
+                  value={bot.webhookUrl}
+                />
+                <button
+                  type="button"
+                  className="px-2 py-1 border rounded"
+                  onClick={() => navigator.clipboard.writeText(bot.webhookUrl!)}
+                >
+                  Copy
+                </button>
+              </div>
+            </div>
+          )}
+
+          {bot.status === 'error' && bot.lastError && (
+            <div className="bg-red-50 text-red-700 text-sm p-2 rounded">
+              {bot.lastError}
+            </div>
+          )}
+        </div>
+      )}
     </Card>
   );
 }

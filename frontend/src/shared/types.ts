@@ -1,11 +1,15 @@
 export interface Bot {
-  id: number;
+  id: string;
   name: string;
   description?: string | null;
   photoUrl?: string | null;
   tokenMasked: string;
-  createdAt: string;
-  updatedAt: string;
+  // NEW fields for webhook connection status
+  status: 'connected' | 'disconnected' | 'error';
+  webhookUrl?: string | null;
+  lastError?: string | null;
+  createdAt: string; // ISO
+  updatedAt: string; // ISO
 }
 
 export interface BotWithToken {
@@ -26,3 +30,12 @@ export interface UpdateBotInput {
   photoUrl?: string | null;
   botToken?: string;
 }
+
+export type ConnectResult = {
+  status: 'connected';
+  webhookUrl: string;
+};
+
+export type DisconnectResult = {
+  status: 'disconnected';
+};

@@ -7,6 +7,8 @@ type Bot = PrismaBot & {
 };
 
 import { prisma } from '../prisma';
+import { decryptToken } from '../lib/crypto';
+import type { BotConfig } from '../types';
 
 export const botService = {
   create(data: {
@@ -60,3 +62,20 @@ export const botService = {
     return res.count > 0;
   },
 };
+
+export async function getBotConfigFromDb(
+  botId: string,
+): Promise<BotConfig | null> {
+  const bot = await prisma.bot.findUnique({ where: { id: botId } });
+  if (!bot) return null;
+
+  const token = decryptToken(bot.encryptedToken);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const welcome: string | undefined = (bot as any).welcomeMessage;
+
+  return {
+    token,
+    greeting: welcome ? { type: 'text', payload: welcome } : undefined,
+  } as BotConfig;
+}
