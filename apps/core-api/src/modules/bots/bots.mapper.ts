@@ -1,4 +1,10 @@
-import { Bot } from '@prisma/client';
+import { Bot as PrismaBot } from '@prisma/client';
+
+type Bot = PrismaBot & {
+  status: string;
+  webhookUrl: string | null;
+  lastError: string | null;
+};
 
 import { maskToken, maskTokenFromLast4 } from '../../lib/crypto';
 
@@ -8,6 +14,9 @@ export type BotDTO = {
   description?: string | null;
   photoUrl?: string | null;
   tokenMasked: string;
+  status: string;
+  webhookUrl?: string | null;
+  lastError?: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -29,6 +38,9 @@ export function toBotDTO(
     description: bot.description,
     photoUrl: bot.photoUrl,
     tokenMasked,
+    status: bot.status,
+    webhookUrl: bot.webhookUrl,
+    lastError: bot.lastError,
     createdAt: bot.createdAt.toISOString(),
     updatedAt: bot.updatedAt.toISOString(),
   };

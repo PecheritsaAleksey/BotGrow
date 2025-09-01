@@ -1,9 +1,9 @@
 import dotenv from 'dotenv';
-dotenv.config();
-
 import express from 'express';
 import { Telegraf } from 'telegraf';
 import { addBot, getBotConfig } from '@botgrow/db';
+
+dotenv.config();
 
 addBot('testbot1', {
   token: process.env.BOT_TOKEN as string,
@@ -17,6 +17,11 @@ const app = express();
 app.use(express.json());
 
 app.post('/bot/:botId/webhook', async (req, res) => {
+  const secret = req.get('x-telegram-bot-api-secret-token');
+  if (secret !== process.env.WEBHOOK_SECRET) {
+    return res.status(401).send('Invalid webhook secret');
+  }
+
   const { botId } = req.params;
   const config = getBotConfig(botId);
 

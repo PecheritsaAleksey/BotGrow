@@ -1,4 +1,10 @@
-import { Bot } from '@prisma/client';
+import { Bot as PrismaBot } from '@prisma/client';
+
+type Bot = PrismaBot & {
+  status: string;
+  webhookUrl: string | null;
+  lastError: string | null;
+};
 
 import { prisma } from '../prisma';
 
@@ -38,6 +44,9 @@ export const botService = {
         | 'encryptedToken'
         | 'tokenHash'
         | 'tokenLast4'
+        | 'status'
+        | 'webhookUrl'
+        | 'lastError'
       >
     >,
   ): Promise<Bot | null> {

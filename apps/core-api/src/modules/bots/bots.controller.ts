@@ -65,3 +65,31 @@ export async function deleteBot(
     next(err);
   }
 }
+
+export async function connectBot(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const id = req.params.id;
+    const result = await botsService.connectBot(req.user!.id, id);
+    res.status(200).json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function disconnectBot(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const id = req.params.id;
+    const result = await botsService.disconnectBot(req.user!.id, id);
+    res.status(200).json(result);
+  } catch (err) {
+    next(err);
+  }
+}

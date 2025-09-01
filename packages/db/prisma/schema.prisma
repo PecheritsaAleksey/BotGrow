@@ -29,6 +29,9 @@ model Bot {
   encryptedToken String
   tokenHash      String
   tokenLast4     String   @default("")
+  status         String   @default("disconnected")
+  webhookUrl     String?
+  lastError      String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
