@@ -21,6 +21,8 @@ import {
   getBot,
   updateBot,
   deleteBot,
+  connectBot,
+  disconnectBot,
 } from './bots.controller';
 
 const validateParams =
@@ -54,5 +56,7 @@ router.put(
   updateBot,
 );
 router.delete('/:id', validateParams(idParamSchema), deleteBot);
+router.post('/:id/connect', validateParams(idParamSchema), connectBot);
+router.post('/:id/disconnect', validateParams(idParamSchema), disconnectBot);
 
 export default router;

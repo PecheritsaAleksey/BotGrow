@@ -8,6 +8,9 @@ export const config = {
   jwtExpires: process.env.JWT_EXPIRES || '7d',
   telegramBotToken: process.env.AUTH_TELEGRAM_BOT_TOKEN,
   encryptionKey: process.env.ENCRYPTION_KEY!,
+  appBaseUrlBotServer: process.env.APP_BASE_URL_BOTSERVER!,
+  webhookSecret: process.env.WEBHOOK_SECRET!,
+  telegramApiBase: process.env.TELEGRAM_API_BASE || 'https://api.telegram.org',
   devMode:
     process.env.DEV_MODE === 'true' || process.env.NODE_ENV !== 'production',
   devUser: {
