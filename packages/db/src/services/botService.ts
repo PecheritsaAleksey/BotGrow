@@ -6,7 +6,7 @@ type Bot = PrismaBot & {
   lastError: string | null;
 };
 
-import { prisma } from '../prisma';
+import { botRepository } from '../repositories/BotRepository';
 import { decryptToken } from '../lib/crypto';
 import type { BotConfig } from '../types';
 
@@ -20,18 +20,18 @@ export const botService = {
     tokenHash: string;
     tokenLast4?: string;
   }): Promise<Bot> {
-    return prisma.bot.create({ data });
+    // repository expects Bot-like shape; casting aligns with current service input
+    return botRepository.create(
+      data as unknown as Omit<Bot, 'id' | 'createdAt' | 'updatedAt'>,
+    );
   },
 
   findAllByUser(userId: string): Promise<Bot[]> {
-    return prisma.bot.findMany({
-      where: { userId },
-      orderBy: { createdAt: 'asc' },
-    });
+    return botRepository.findAllByUser(userId);
   },
 
   findByIdForUser(id: string, userId: string): Promise<Bot | null> {
-    return prisma.bot.findFirst({ where: { id, userId } });
+    return botRepository.findByIdForUser(id, userId);
   },
 
   async updateForUser(
@@ -52,21 +52,23 @@ export const botService = {
       >
     >,
   ): Promise<Bot | null> {
-    const res = await prisma.bot.updateMany({ where: { id, userId }, data });
-    if (!res.count) return null;
-    return prisma.bot.findUnique({ where: { id } });
+    const found = await botRepository.findByIdForUser(id, userId);
+    if (!found) return null;
+    return botRepository.updateForUser(id, userId, data as Partial<Bot>);
   },
 
   async deleteForUser(id: string, userId: string): Promise<boolean> {
-    const res = await prisma.bot.deleteMany({ where: { id, userId } });
-    return res.count > 0;
+    const found = await botRepository.findByIdForUser(id, userId);
+    if (!found) return false;
+    await botRepository.deleteForUser(id, userId);
+    return true;
   },
 };
 
 export async function getBotConfigFromDb(
   botId: string,
 ): Promise<BotConfig | null> {
-  const bot = await prisma.bot.findUnique({ where: { id: botId } });
+  const bot = await botRepository.findById(botId);
   if (!bot) return null;
 
   const token = decryptToken(bot.encryptedToken);
