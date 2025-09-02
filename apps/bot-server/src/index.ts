@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import express from 'express';
 import { Telegraf } from 'telegraf';
-import { getBotConfigFromDb } from '@botgrow/db';
+import { getBotConfigFromDb, subscriberService } from '@botgrow/db';
 
 dotenv.config();
 
@@ -10,6 +10,9 @@ app.use(express.json());
 
 app.post('/bot/:botId/webhook', async (req, res) => {
   const secret = req.get('x-telegram-bot-api-secret-token');
+
+  console.log('Received message:', req.body);
+
   if (secret !== process.env.WEBHOOK_SECRET) {
     return res.status(401).send('Invalid webhook secret');
   }
@@ -33,7 +36,37 @@ app.post('/bot/:botId/webhook', async (req, res) => {
     }
   });
 
-  await bot.handleUpdate(req.body);
+  const update = req.body;
+
+  // Upsert subscriber on message updates
+  const msg = update?.message;
+  if (msg?.from) {
+    await subscriberService.upsertSeen({
+      botId,
+      telegramId: msg.from.id,
+      username: msg.from.username ?? null,
+      firstName: msg.from.first_name ?? null,
+      lastName: msg.from.last_name ?? null,
+      language: msg.from.language_code ?? null,
+    });
+  }
+
+  // Membership updates (e.g., user blocks/unblocks bot in private chat)
+  const myChatMember = update?.my_chat_member;
+  if (myChatMember?.from && myChatMember?.chat?.type === 'private') {
+    const tgId: number = myChatMember.from.id;
+    await subscriberService.upsertSeen({
+      botId,
+      telegramId: tgId,
+      username: myChatMember.from.username ?? null,
+      firstName: myChatMember.from.first_name ?? null,
+      lastName: myChatMember.from.last_name ?? null,
+      language: myChatMember.from.language_code ?? null,
+    });
+    // Note: upsertSeen marks isActive=true. A hard flip based on status can be added later.
+  }
+
+  await bot.handleUpdate(update);
   res.send('OK');
 });
 

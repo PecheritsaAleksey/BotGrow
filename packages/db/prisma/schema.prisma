@@ -37,6 +37,30 @@ model Bot {
 
   user User @relation(name: "UserBots", fields: [userId], references: [id], onDelete: Cascade)
 
+  // Subscribers relation (implicit backreference)
+  // Not required for functionality but useful for querying
+  subscribers Subscriber[]
+
   @@index([userId])
   @@index([tokenHash])
+}
+
+model Subscriber {
+  id         String   @id @default(uuid())
+  botId      String
+  telegramId Int
+  username   String?
+  firstName  String?
+  lastName   String?
+  language   String?
+  photoUrl   String?
+  isActive   Boolean  @default(true)
+  lastSeenAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+
+  bot Bot @relation(fields: [botId], references: [id], onDelete: Cascade)
+
+  @@unique([botId, telegramId])
+  @@index([botId])
+  @@index([botId, lastSeenAt])
 }

@@ -9,6 +9,10 @@ import type { ZodSchema } from 'zod';
 import validate from '../../middlewares/validate';
 import { authGuard } from '../../middlewares/authGuard';
 import { ApiError } from '../../lib/errors';
+import {
+  listSubscribers,
+  countSubscribers,
+} from '../subscribers/subscribers.controller';
 
 import {
   createBotSchema,
@@ -58,5 +62,13 @@ router.put(
 router.delete('/:id', validateParams(idParamSchema), deleteBot);
 router.post('/:id/connect', validateParams(idParamSchema), connectBot);
 router.post('/:id/disconnect', validateParams(idParamSchema), disconnectBot);
+
+// Subscribers endpoints
+router.get('/:id/subscribers', validateParams(idParamSchema), listSubscribers);
+router.get(
+  '/:id/subscribers/count',
+  validateParams(idParamSchema),
+  countSubscribers,
+);
 
 export default router;
