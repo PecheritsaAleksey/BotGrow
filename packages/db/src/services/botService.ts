@@ -73,11 +73,8 @@ export async function getBotConfigFromDb(
 
   const token = decryptToken(bot.encryptedToken);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const welcome: string | undefined = (bot as any).welcomeMessage;
-
   return {
+    id: bot.id,
     token,
-    greeting: welcome ? { type: 'text', payload: welcome } : undefined,
   } as BotConfig;
 }
