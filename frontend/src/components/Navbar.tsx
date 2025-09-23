@@ -1,4 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom';
+
 import { useAuth } from '@/store/auth';
 
 export default function Navbar() {
@@ -11,11 +12,13 @@ export default function Navbar() {
   };
 
   const linkClass = ({ isActive }: { isActive: boolean }) =>
-    isActive ? 'font-semibold text-blue-600' : 'text-gray-600';
+    isActive
+      ? 'px-2 py-1 rounded-xl font-medium text-primary'
+      : 'px-2 py-1 rounded-xl text-text-muted hover:text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg';
 
   return (
-    <nav className="bg-white shadow">
-      <div className="container mx-auto px-4 py-2 flex gap-4 items-center">
+    <nav className="bg-surface border-b border-border">
+      <div className="container mx-auto px-4 py-3 flex gap-4 items-center">
         {isAuthenticated && (
           <>
             <NavLink to="/" end className={linkClass}>
@@ -27,13 +30,15 @@ export default function Navbar() {
             <NavLink to="/settings" className={linkClass}>
               Settings
             </NavLink>
-            <div className="ml-auto flex items-center gap-2">
+            <div className="ml-auto flex items-center gap-3">
               {user?.username && (
-                <span className="text-sm text-gray-500">@{user.username}</span>
+                <span className="text-sm text-text-muted">
+                  @{user.username}
+                </span>
               )}
               <button
                 onClick={handleLogout}
-                className="text-sm text-red-600"
+                className="btn-ghost text-error text-sm"
               >
                 Logout
               </button>

@@ -24,49 +24,46 @@ export default function Bots() {
   return (
     <Card title="Bots">
       <div className="mb-4">
-        <Link
-          to="/bots/new"
-          className="bg-blue-500 text-white px-3 py-1 rounded"
-        >
+        <Link to="/bots/new" className="btn-primary">
           Create Bot
         </Link>
       </div>
-      <table className="min-w-full text-left">
+      <table className="table-base">
         <thead>
           <tr>
-            <th className="py-2">Name</th>
-            <th className="py-2">Status</th>
-            <th className="py-2">Token</th>
+            <th className="table-th">Name</th>
+            <th className="table-th">Status</th>
+            <th className="table-th">Token</th>
             <th />
           </tr>
         </thead>
         <tbody>
           {bots.map((b) => (
-            <tr key={b.id} className="border-t">
-              <td className="py-2">{b.name}</td>
-              <td className="py-2">
+            <tr key={b.id} className="table-tr">
+              <td className="table-td">{b.name}</td>
+              <td className="table-td">
                 <span
                   className={
                     b.status === 'connected'
-                      ? 'text-green-600'
+                      ? 'text-success'
                       : b.status === 'error'
-                        ? 'text-red-600'
-                        : 'text-gray-500'
+                        ? 'text-error'
+                        : 'text-text-muted'
                   }
                 >
                   ●
                 </span>
               </td>
-              <td className="py-2 font-mono">{b.tokenMasked}</td>
-              <td className="py-2 space-x-2">
+              <td className="table-td font-mono">{b.tokenMasked}</td>
+              <td className="table-td space-x-2">
                 <button
-                  className="text-blue-600"
+                  className="btn-ghost text-primary px-2 py-1"
                   onClick={() => navigate(`/bots/${b.id}`)}
                 >
                   Open
                 </button>
                 <button
-                  className="text-red-600"
+                  className="btn-ghost text-error px-2 py-1"
                   onClick={() => handleDelete(b.id)}
                 >
                   Delete

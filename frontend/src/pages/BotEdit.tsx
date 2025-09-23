@@ -171,29 +171,33 @@ export default function BotEdit() {
       {isNew ? (
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
-            <label className="block mb-1">Name *</label>
+            <label className="block mb-1 text-sm text-text-muted">Name *</label>
             <input
               name="name"
-              className="border p-2 w-full"
+              className="input"
               value={form.name}
               onChange={handleChange}
               required
             />
           </div>
           <div>
-            <label className="block mb-1">Description</label>
+            <label className="block mb-1 text-sm text-text-muted">
+              Description
+            </label>
             <textarea
               name="description"
-              className="border p-2 w-full"
+              className="textarea"
               value={form.description}
               onChange={handleChange}
             />
           </div>
           <div>
-            <label className="block mb-1">Photo URL</label>
+            <label className="block mb-1 text-sm text-text-muted">
+              Photo URL
+            </label>
             <input
               name="photoUrl"
-              className="border p-2 w-full"
+              className="input"
               value={form.photoUrl}
               onChange={handleChange}
             />
@@ -201,24 +205,24 @@ export default function BotEdit() {
           <div>
             <label className="block mb-1">
               Bot Token *{' '}
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-text-muted">
                 (we won’t show it again)
               </span>
             </label>
             <input
               name="botToken"
-              className="border p-2 w-full font-mono"
+              className="input font-mono"
               value={form.botToken}
               onChange={handleChange}
               required
             />
           </div>
           {plainToken && (
-            <div className="bg-yellow-100 p-2 rounded text-sm">
+            <div className="bg-muted text-warning p-2 rounded-xl text-sm border border-border">
               Plain token: <span className="font-mono">{plainToken}</span>
               <button
                 type="button"
-                className="ml-2 text-blue-600"
+                className="ml-2 btn-ghost text-primary px-2 py-1"
                 onClick={() => navigator.clipboard.writeText(plainToken)}
               >
                 Copy
@@ -226,17 +230,13 @@ export default function BotEdit() {
             </div>
           )}
           <div className="flex gap-2">
-            <button
-              type="submit"
-              className="bg-green-500 text-white px-4 py-1 rounded"
-              disabled={isBusy}
-            >
+            <button type="submit" className="btn-primary" disabled={isBusy}>
               Save
             </button>
             <button
               type="button"
               onClick={() => navigate('/bots')}
-              className="border px-4 py-1 rounded"
+              className="btn-outline"
               disabled={isBusy}
             >
               Cancel
@@ -247,40 +247,42 @@ export default function BotEdit() {
         bot && (
           <div className="space-y-6">
             {/* Basic info read-only with Edit button */}
-            <div className="border rounded p-3">
+            <div className="rounded-2xl border border-border bg-surface p-4">
               <div className="flex items-start justify-between">
                 <div>
-                  <div className="text-sm text-gray-500">Name</div>
+                  <div className="text-sm text-text-muted">Name</div>
                   <div className="text-lg font-medium">{bot.name}</div>
                 </div>
                 <button
                   type="button"
-                  className="px-3 py-1 rounded border"
+                  className="btn-outline"
                   onClick={() => setEditOpen(true)}
                 >
                   Edit
                 </button>
               </div>
               <div className="mt-3">
-                <div className="text-sm text-gray-500">Description</div>
+                <div className="text-sm text-text-muted">Description</div>
                 <div className="whitespace-pre-wrap">
-                  {bot.description || <span className="text-gray-400">—</span>}
+                  {bot.description || (
+                    <span className="text-text-muted">—</span>
+                  )}
                 </div>
               </div>
               <div className="mt-3">
-                <div className="text-sm text-gray-500">Photo URL</div>
+                <div className="text-sm text-text-muted">Photo URL</div>
                 <div className="break-all">
-                  {bot.photoUrl || <span className="text-gray-400">—</span>}
+                  {bot.photoUrl || <span className="text-text-muted">—</span>}
                 </div>
               </div>
             </div>
 
             {/* Bot Token updater */}
-            <div className="border rounded p-3 space-y-2">
-              <div className="text-sm text-gray-500">Bot Token</div>
+            <div className="rounded-2xl border border-border bg-surface p-4 space-y-2">
+              <div className="text-sm text-text-muted">Bot Token</div>
               <input
                 name="botToken"
-                className="border p-2 w-full font-mono"
+                className="input font-mono"
                 value={form.botToken}
                 onChange={handleChange}
                 placeholder={bot.tokenMasked}
@@ -288,18 +290,18 @@ export default function BotEdit() {
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  className="bg-green-600 text-white px-3 py-1 rounded"
+                  className="btn-primary"
                   onClick={handleUpdateToken}
                   disabled={isBusy || !form.botToken}
                 >
                   Update Token
                 </button>
                 {plainToken && (
-                  <div className="bg-yellow-100 p-2 rounded text-sm">
+                  <div className="bg-muted text-warning p-2 rounded-xl text-sm border border-border">
                     Plain token: <span className="font-mono">{plainToken}</span>
                     <button
                       type="button"
-                      className="ml-2 text-blue-600"
+                      className="ml-2 btn-ghost text-primary px-2 py-1"
                       onClick={() => navigator.clipboard.writeText(plainToken)}
                     >
                       Copy
@@ -310,17 +312,17 @@ export default function BotEdit() {
             </div>
 
             {/* Connection block (unchanged) */}
-            <div className="border rounded p-3 space-y-2">
+            <div className="rounded-2xl border border-border bg-surface p-4 space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="font-semibold">Connection</span>
                   <span
                     className={
                       bot.status === 'connected'
-                        ? 'text-green-600'
+                        ? 'text-success'
                         : bot.status === 'error'
-                          ? 'text-red-600'
-                          : 'text-gray-600'
+                          ? 'text-error'
+                          : 'text-text-muted'
                     }
                   >
                     {bot.status}
@@ -331,7 +333,7 @@ export default function BotEdit() {
                   {bot.status !== 'connected' && (
                     <button
                       type="button"
-                      className="bg-blue-600 text-white px-3 py-1 rounded"
+                      className="btn-primary"
                       onClick={handleConnect}
                       disabled={isBusy}
                     >
@@ -341,7 +343,7 @@ export default function BotEdit() {
                   {bot.status === 'connected' && (
                     <button
                       type="button"
-                      className="bg-yellow-600 text-white px-3 py-1 rounded"
+                      className="btn bg-warning text-white hover:brightness-95"
                       onClick={handleDisconnect}
                       disabled={isBusy}
                     >
@@ -353,16 +355,12 @@ export default function BotEdit() {
 
               {bot.status === 'connected' && bot.webhookUrl && (
                 <div className="text-sm">
-                  <div className="text-gray-500 mb-1">Webhook URL</div>
+                  <div className="text-text-muted mb-1">Webhook URL</div>
                   <div className="flex items-center gap-2">
-                    <input
-                      className="border p-2 w-full"
-                      readOnly
-                      value={bot.webhookUrl}
-                    />
+                    <input className="input" readOnly value={bot.webhookUrl} />
                     <button
                       type="button"
-                      className="px-2 py-1 border rounded"
+                      className="btn-outline px-3"
                       onClick={() =>
                         navigator.clipboard.writeText(bot.webhookUrl!)
                       }
@@ -374,39 +372,43 @@ export default function BotEdit() {
               )}
 
               {bot.status === 'error' && bot.lastError && (
-                <div className="bg-red-50 text-red-700 text-sm p-2 rounded">
+                <div className="bg-muted text-error text-sm p-2 rounded-xl border border-error">
                   {bot.lastError}
                 </div>
               )}
             </div>
 
             {/* Bot Settings (local only) */}
-            <div className="border rounded p-3 space-y-4">
+            <div className="rounded-2xl border border-border bg-surface p-4 space-y-4">
               <div className="text-lg font-semibold">Bot Settings</div>
               <div>
-                <label className="block mb-1">Welcome Message</label>
+                <label className="block mb-1 text-sm text-text-muted">
+                  Welcome Message
+                </label>
                 <input
-                  className="border p-2 w-full"
+                  className="input"
                   value={welcomeMessage}
                   onChange={(e) => setWelcomeMessage(e.target.value)}
                   placeholder="Welcome to our bot!"
                 />
               </div>
               <div className="flex items-center gap-3">
-                <label className="text-sm">Enable Broadcasts</label>
+                <label className="text-sm text-text-muted">
+                  Enable Broadcasts
+                </label>
                 <input
                   type="checkbox"
                   checked={enableBroadcasts}
                   onChange={(e) => setEnableBroadcasts(e.target.checked)}
                 />
               </div>
-              <div className="text-xs text-gray-500">
+              <div className="text-xs text-text-muted">
                 Changes are local only for now.
               </div>
               <div className="flex justify-between">
                 <button
                   type="button"
-                  className="border px-3 py-1 rounded"
+                  className="btn-outline"
                   onClick={() => {
                     setWelcomeMessage('');
                     setEnableBroadcasts(false);
@@ -416,7 +418,7 @@ export default function BotEdit() {
                 </button>
                 <button
                   type="button"
-                  className="bg-gray-800 text-white px-3 py-1 rounded"
+                  className="btn-ghost text-text"
                   onClick={() => alert('Settings saved locally')}
                 >
                   Save (Local)
@@ -429,7 +431,7 @@ export default function BotEdit() {
               <button
                 type="button"
                 onClick={handleDelete}
-                className="bg-red-500 text-white px-4 py-1 rounded"
+                className="btn bg-error text-white hover:brightness-95"
                 disabled={isBusy}
               >
                 Delete Bot
@@ -441,14 +443,16 @@ export default function BotEdit() {
 
       {/* Edit Modal */}
       {isEditOpen && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-          <div className="bg-white rounded shadow-xl w-full max-w-lg p-4">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="card w-full max-w-lg p-5 shadow-lg transition-transform duration-200 ease-out">
             <div className="text-lg font-semibold mb-2">Edit Bot</div>
             <div className="space-y-3">
               <div>
-                <label className="block mb-1">Name *</label>
+                <label className="block mb-1 text-sm text-text-muted">
+                  Name *
+                </label>
                 <input
-                  className="border p-2 w-full"
+                  className="input"
                   value={editForm.name}
                   onChange={(e) =>
                     setEditForm({ ...editForm, name: e.target.value })
@@ -456,9 +460,11 @@ export default function BotEdit() {
                 />
               </div>
               <div>
-                <label className="block mb-1">Description</label>
+                <label className="block mb-1 text-sm text-text-muted">
+                  Description
+                </label>
                 <textarea
-                  className="border p-2 w-full"
+                  className="textarea"
                   value={editForm.description}
                   onChange={(e) =>
                     setEditForm({ ...editForm, description: e.target.value })
@@ -466,9 +472,11 @@ export default function BotEdit() {
                 />
               </div>
               <div>
-                <label className="block mb-1">Photo URL</label>
+                <label className="block mb-1 text-sm text-text-muted">
+                  Photo URL
+                </label>
                 <input
-                  className="border p-2 w-full"
+                  className="input"
                   value={editForm.photoUrl}
                   onChange={(e) =>
                     setEditForm({ ...editForm, photoUrl: e.target.value })
@@ -478,15 +486,12 @@ export default function BotEdit() {
             </div>
             <div className="mt-4 flex justify-end gap-2">
               <button
-                className="border px-3 py-1 rounded"
+                className="btn-outline"
                 onClick={() => setEditOpen(false)}
               >
                 Cancel
               </button>
-              <button
-                className="bg-green-600 text-white px-3 py-1 rounded"
-                onClick={handleSaveEdit}
-              >
+              <button className="btn-primary" onClick={handleSaveEdit}>
                 Save
               </button>
             </div>

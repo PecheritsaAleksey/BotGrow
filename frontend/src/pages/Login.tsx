@@ -57,14 +57,16 @@ export default function Login() {
   }, []);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="p-8 rounded-2xl shadow bg-white space-y-4 text-center">
-        <h1 className="text-2xl font-semibold">Sign in to BotGrow</h1>
+    <div className="min-h-screen flex items-center justify-center bg-muted">
+      <div className="card p-8 md:p-10 space-y-4 text-center">
+        <h1 className="text-2xl md:text-3xl font-semibold">
+          Sign in to BotGrow
+        </h1>
         <div ref={widgetRef} className="flex justify-center" />
         {showDev && (
           <button
             type="button"
-            className="w-full bg-gray-200 text-gray-700 py-2 rounded"
+            className="w-full btn-online"
             onClick={async () => {
               try {
                 const res = await devLogin();
@@ -79,7 +81,7 @@ export default function Login() {
             Login as Demo User
           </button>
         )}
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-text-muted">
           Login with your Telegram account to continue.
         </p>
       </div>
