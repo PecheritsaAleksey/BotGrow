@@ -7,6 +7,20 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// Message templates & steps enums
+enum StepType {
+  TEXT
+  PHOTO
+  DOCUMENT
+  VIDEO
+}
+
+enum ParseMode {
+  NONE
+  MarkdownV2
+  HTML
+}
+
 model User {
   id          String   @id @default(uuid())
   telegramId  Int      @unique
@@ -41,8 +55,14 @@ model Bot {
   // Not required for functionality but useful for querying
   subscribers Subscriber[]
 
+  // Message templates relations
+  welcomeMessageId String?
+  welcomeMessage   MessageTemplate?  @relation("WelcomeForBot", fields: [welcomeMessageId], references: [id])
+  messages         MessageTemplate[] @relation("TemplatesOfBot")
+
   @@index([userId])
   @@index([tokenHash])
+  @@index([welcomeMessageId], map: "idx_bot_welcome_message_id")
 }
 
 model Subscriber {
@@ -63,4 +83,46 @@ model Subscriber {
   @@unique([botId, telegramId])
   @@index([botId])
   @@index([botId, lastSeenAt])
+}
+
+model MessageTemplate {
+  id         String   @id @default(uuid())
+  botId      String
+  bot        Bot      @relation("TemplatesOfBot", fields: [botId], references: [id], onDelete: Cascade)
+  title      String
+  locale     String?
+  isArchived Boolean  @default(false)
+
+  steps      MessageStep[]
+
+  // Opposite side of Bot.welcomeMessage
+  welcomedByBots Bot[] @relation("WelcomeForBot")
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([botId], map: "idx_template_bot_id")
+  @@index([updatedAt], map: "idx_template_updated_at")
+}
+
+model MessageStep {
+  id             String          @id @default(uuid())
+  templateId     String
+  template       MessageTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  order          Int
+  type           StepType
+  parseMode      ParseMode       @default(NONE)
+
+  text           String?
+  mediaUrl       String?
+  fileId         String?
+  disablePreview Boolean         @default(true)
+  keyboardJson   Json?
+  delayMs        Int             @default(0)
+
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@index([templateId, order], map: "idx_step_template_order")
 }
