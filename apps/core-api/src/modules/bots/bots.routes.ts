@@ -42,7 +42,7 @@ const validateParams =
         ),
       );
     }
-    req.params = r.data;
+    req.params = r.data as Record<string, string>;
     next();
   };
 
